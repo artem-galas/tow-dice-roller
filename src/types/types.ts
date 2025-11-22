@@ -8,4 +8,33 @@ export const Characteristics = {
   'Fel': 'Fellowship',
 }
 
-export type CharacteristicKey = keyof typeof Characteristics;
+export const Skills = {
+  WS: ['Melee', 'Defense'],
+  BS: ['Shooting', 'Throwing'],
+  S:  ['Brawl', 'Toil'],
+  T:  ['Survival', 'Endurance'],
+  Ag: ['Athletics', 'Stealth'],
+  Re: ['Willpower', 'Recall'],
+  Fel: ['Leadership', 'Charm'],
+} as const;
+
+export type SkillsByCharacteristic = typeof Skills;
+export type CharacteristicKey = keyof SkillsByCharacteristic;
+export type SkillFor<C extends CharacteristicKey> = SkillsByCharacteristic[C][number];
+
+export type RollDiceFn = <
+  C extends CharacteristicKey,
+  S extends SkillFor<C>
+>(
+  characteristic: C,
+  attribute: S
+) => void;
+
+
+export type Character = {
+  [K in CharacteristicKey]: {
+    favored: boolean;
+    value: number;
+    skills: Record<SkillFor<K>, number>;
+  };
+};
