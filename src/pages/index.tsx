@@ -2,7 +2,7 @@
 
 import {Geist, Geist_Mono} from "next/font/google";
 import CharacteristicComponent from "@/components/skills/characteristicComponent";
-import {CharacteristicKey, Characteristics, RollDiceFn, Character} from "@/types/types";
+import {CharacteristicKey, Characteristics, RollDiceFn, Character, Skills} from "@/types/types";
 import SkillComponent from "@/components/attributes/skillComponent";
 import DiceBox from '@3d-dice/dice-box'
 import {useEffect, useRef} from "react";
@@ -149,13 +149,19 @@ export default function Home() {
         <div ref={diceContainerRef}
              className="dice-rolling fixed top-0 left-0 z-20 w-full h-full pointer-events-none [&>canvas]:w-full [&>canvas]:h-full"/>
         <form className="divide-y" onSubmit={handleSubmit(onSubmit)}>
-          {Object.keys(Characteristics).map((characteristic) => (
+          {(Object.keys(Characteristics) as CharacteristicKey[]).map((characteristic) => (
             <section key={characteristic}
                      className="flex border-l border-r border-parchment-ink first:border-t last:border-b">
-              <CharacteristicComponent form={register} name={characteristic as CharacteristicKey}/>
-              <SkillComponent form={register} name={characteristic as CharacteristicKey} onClick={rollDice}/>
+              <CharacteristicComponent variant="form" form={register} name={characteristic}/>
+              <SkillComponent
+                variant="form"
+                form={register}
+                name={characteristic}
+                skills={getValues(`${characteristic}.skills`)}
+                onClick={rollDice}/>
             </section>
           ))}
+          <button type={"submit"}>CLICK</button>
         </form>
         <Toaster/>
       </main>

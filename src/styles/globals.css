@@ -79,6 +79,7 @@
   --color-parchment: #f5eeda;
   --color-parchment-accent: #c9b7a3;
   --color-parchment-ink: #4a3f35;
+  --color-ink-header:#8c1818
 }
 
 @media (prefers-color-scheme: dark) {

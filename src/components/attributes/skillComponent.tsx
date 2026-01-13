@@ -1,14 +1,28 @@
-import {Character, CharacteristicKey, RollDiceFn, SkillFor, Skills} from "@/types/types";
+import {Character, CharacteristicKey, RollDiceFn, SkillFor} from "@/types/types";
 import {UseFormRegister, type Path} from "react-hook-form";
 import {D10DiceIcon} from "@/components/dice-icon/d10-dice.icon";
+import {cn} from "@/lib/utils";
 
-type AttributesComponentProps = {
+type SkillRecord<K extends CharacteristicKey> = K extends string
+  ? Record<SkillFor<K>, number>
+  : never;
+
+type SkillComponentProps<K extends CharacteristicKey> = | {
+  variant: 'form';
   name: CharacteristicKey;
   form: UseFormRegister<Character>
   onClick: RollDiceFn;
-}
+  skills: SkillRecord<K>
+} |
+  {
+    variant: 'readonly';
+    name?: never;
+    form?: never;
+    onClick?: never;
+    skills: SkillRecord<K>
+  }
 
-export default function SkillComponent({name, form, onClick}: AttributesComponentProps) {
+export default function SkillComponent<K extends CharacteristicKey>({form, name, onClick, variant, skills}: SkillComponentProps<K>) {
   function skillPath<
     C extends CharacteristicKey,
     S extends SkillFor<C>
@@ -17,14 +31,21 @@ export default function SkillComponent({name, form, onClick}: AttributesComponen
   }
 
   return <div className="attributes flex-1 divide-y divide-dotted divide-parchment-ink">
-    {Skills[name].map((attr) => (
-      <div key={attr} className="text-lg flex justify-between items-center p-2">
-        <div className="cursor-pointer flex gap-2 flex-1 hover:bg-gray-400" onClick={() => onClick(name, attr)}>
-          <div className="text-lg">{attr}</div>
-          <D10DiceIcon fill="#000"/>
+    {Object.entries(skills).map(([skill, value]) => (
+      <div key={skill} className="text-lg flex justify-between items-center p-2">
+        <div className={cn("cursor-pointer flex gap-2 flex-1", variant ==="form" && 'hover:bg-gray-400') } onClick={() => onClick ? onClick(name, skill as SkillFor<K>) : undefined}>
+          <div className="text-lg">{skill}</div>
+          {variant === 'form' && (
+            <D10DiceIcon fill="#000"/>
+          )}
         </div>
-        <input {...form(skillPath(name, attr))} type="number"
-               className="bg-transparent w-[50px] text-center border-b-[1px] border-parchment-ink p-2"/>
+        {variant === 'form' && (
+          <input {...form(skillPath(name, skill as SkillFor<K>))} type="number"
+                 className="bg-transparent w-[50px] text-center border-b border-parchment-ink p-2"/>
+        )}
+        {variant === 'readonly' && (
+          <div className="text-lg font-bold leading-none text-black">{value}</div>
+        )}
       </div>
     ))}
   </div>

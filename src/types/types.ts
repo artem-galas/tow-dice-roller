@@ -11,8 +11,8 @@ export const Characteristics = {
 export const Skills = {
   WS: ['Melee', 'Defense'],
   BS: ['Shooting', 'Throwing'],
-  S:  ['Brawl', 'Toil'],
-  T:  ['Survival', 'Endurance'],
+  S: ['Brawl', 'Toil'],
+  T: ['Survival', 'Endurance'],
   Ag: ['Athletics', 'Stealth'],
   Re: ['Willpower', 'Recall'],
   Fel: ['Leadership', 'Charm'],
@@ -38,3 +38,21 @@ export type Character = {
     skills: Record<SkillFor<K>, number>;
   };
 };
+
+
+export type Encounter = {
+  name: string;
+  type: 'minion' | 'brute' | 'champions' | 'monstrosities';
+  speed: 'slow' | 'normal' | 'fast';
+  resilience: number;
+  wounds: number
+} & {
+  [K in CharacteristicKey]: {
+    value: number;
+    skills: Record<SkillFor<K>, number>;
+  }
+};
+
+export function typedEntries<T extends object>(obj: T) {
+  return Object.entries(obj) as [keyof T, T[keyof T]][];
+}
